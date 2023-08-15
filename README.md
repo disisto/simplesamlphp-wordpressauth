@@ -1,8 +1,8 @@
 # SimpleSAMLphp WordpressAuth
 
-SimpleSAMLphp module to use Wordpress as a SAML 2.0 Identity Provider.
+SimpleSAMLphp module to use WordPress as a SAML 2.0 Identity Provider.
 
-WordpressAuth is a <a href="https://github.com/simplesamlphp/simplesamlphp">SimpleSAMLphp</a> authentication module, that allows to use the Wordpress user database as the authentication source. The code was written for MySQL/MariaDB.
+WordpressAuth is a <a href="https://github.com/simplesamlphp/simplesamlphp">SimpleSAMLphp</a> authentication module, that allows to use the WordPress user database as the authentication source. The code was written for MySQL/MariaDB.
 
 <img src="https://raw.githubusercontent.com/disisto/simplesamlphp-wordpressauth/master/img/simplesamlphp-sp-demo-app.gif">
 
@@ -10,20 +10,24 @@ WordpressAuth is a <a href="https://github.com/simplesamlphp/simplesamlphp">Simp
 
 ## Content
 
-- [Requirements]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#requirements)
-- [Installation]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#installation)
-  - [Download]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#download)
-     - [cURL]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#curl)
-     - [wget]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#wget)
-     - [git]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#git)
-  - [Enable Module in config.php]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#enable-module-in-configphp)
-- [Testing]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#testing)
+- [Requirements](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#requirements)
+- [Installation](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#installation)
+  - [Download](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#download)
+     - [cURL](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#curl)
+     - [wget](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#wget)
+     - [git](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#git)
+  - [Enable Module](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#enable-module)
+  - [Adding database credentials](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#adding-database-credentials)
+  - [Switch authentication source](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#switch-authentication-source)
+- [Testing](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#testing)
+- [Credits](https://github.com/disisto/simplesamlphp-wordpressauth/wiki#credits)
 
 ---
 
 ## Requirements
 
 - SimpleSAMLphp ```2.0```
+  - Tested with SimpleSAMLphp ```2.0.5```
 - WordPress
   - Tested with WordPress ```6.3```*
 - MariaDB/MySQL
