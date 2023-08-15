@@ -16,7 +16,7 @@ WordpressAuth is a SimpleSAMLphp authentication module, that allows to use the W
      - [cURL]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#curl)
      - [wget]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#wget)
      - [git]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#git)
-  - [Enable Theme in config.php]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#enable-theme-in-configphp)
+  - [Enable Module in config.php]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#enable-module-in-configphp)
 - [Testing]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#testing)
 
 ---
