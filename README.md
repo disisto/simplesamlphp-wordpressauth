@@ -1,48 +1,42 @@
-# WordpressAuth
-SimpleSAMLphp module to use Wordpress as a SAML 2.0 Identity Provider. (requires PHP 5 >= 5.3 or PHP 7)
+# SimpleSAMLphp WordpressAuth
+
+SimpleSAMLphp module to use Wordpress as a SAML 2.0 Identity Provider.
 
 WordpressAuth is a SimpleSAMLphp authentication module, that allows to use the Wordpress user database as the authentication source. The code was written for MySQL/MariaDB.
 
-## Setup
+<img src="https://github.com/disisto/simplesamlphp-wordpressauth/main/img/simplesamlphp-sp-demo-app.gif">
 
-### 1 Setup Wordpress on Your Webserver
+---
 
-### 2 Install SimpleSAMLphp on Your Webserver
+## Content
 
-Install SimpleSAMLphp and follow the SimpleSAMLphp instructions to set it up as an identity provider ([SimpleSAMLphp Identity Provider QuickStart](https://simplesamlphp.org/docs/stable/simplesamlphp-idp)) 
+- [Requirements]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#requirements)
+- [Installation]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#installation)
+  - [Download]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#download)
+     - [cURL]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#curl)
+     - [wget]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#wget)
+     - [git]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#git)
+  - [Enable Theme in config.php]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#enable-theme-in-configphp)
+- [Testing]( https://github.com/disisto/simplesamlphp-wordpressauth/wiki#testing)
 
-### 3 Add WordpressAuth Module
+---
 
-Create new directory `wordpressauth` under the `modules` directory (`simplesaml/modules/wordpressauth`) and copy the files from this repository to it. 
+## Requirements
 
-### 4 Configure Authentication Source 
+- SimpleSAMLphp ```2.0```
+- WordPress
+  - Tested with WordPress ```6.3```*
+- MariaDB/MySQL
+  - Tested with MariaDB ```11.0.3```*
 
-Edit the configuration file for authentication sources `simplesaml/config/authsources.php` and add:
+*Backward compatible.
 
-```php
+---
 
-'wpauthinstance' => array(
-    'dsn' => 'mysql:host=localhost;port=3306;dbname=<mysql database name>',
-    'username' => '<mysql username>',
-    'password' => '<mysql password>',
-    'userstable' => 'wp_users',
-    'wordpressauth:WordpressAuth'
- ),
- 
-```
-Replace the placeholders with your MySQL host, username, password and database name. 
+## Credits
 
-### 5 Set Authentication Source in Metadata File
+Big thanks to <a href="https://github.com/OliverMaerz/WordpressAuth">Oliver Maerz</a> for the initial inspiration and <a href="https://github.com/Financial-Edge/simplesamlphp-module-wordpressauth/tree/master">Financial-Edge</a> for the extensions to the original.
 
-Edit the metadata file for the hosted SAML 2.0 IdP `simplesaml/metadata/saml20-idp-hosted.php`
-and set `wpauthinstance` as your authentication source: 
+---
 
-```php
-
-/*
- * Authentication source to use. Must be one that is configured in
- * 'config/authsources.php'.
- */
-'auth' => 'wpauthinstance',
- 
-```
+This project is not affiliated with <a href="https://simplesamlphp.org/">SimpleSAMLphp</a>, <a href="https://wordpress.com/">WordPress</a> and/or <a href="https://mariadb.org/">MariaDB</a>.<br>All mentioned trademarks are the property of their respective owners.
