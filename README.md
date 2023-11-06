@@ -26,8 +26,8 @@ WordpressAuth is a <a href="https://github.com/simplesamlphp/simplesamlphp">Simp
 
 ## Requirements
 
-- SimpleSAMLphp ```2.0```
-  - Tested with SimpleSAMLphp ```2.0.5```
+- SimpleSAMLphp ```2.1```
+  - Tested with SimpleSAMLphp ```2.0.5```, ```2.0.6```, ```2.1.0```
 - WordPress
   - Tested with WordPress ```6.3```*
 - MariaDB/MySQL
