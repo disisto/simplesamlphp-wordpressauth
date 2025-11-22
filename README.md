@@ -26,14 +26,14 @@ WordpressAuth is a <a href="https://github.com/simplesamlphp/simplesamlphp">Simp
 
 ## Requirements
 
-- SimpleSAMLphp ```2.1```
-  - Tested with SimpleSAMLphp ```2.0.5```, ```2.0.6```, ```2.1.0```
-- WordPress
-  - Tested with WordPress ```6.3```*
-- MariaDB/MySQL
-  - Tested with MariaDB ```11.0.3```*
+| Component | Minimum | Tested | Notes |
+|-----------|---------|--------|-------|
+| SimpleSAMLphp | 2.x | 2.4.3 | 2.0.x should work |
+| WordPress | 5.0+ | 6.8.3 | Requires v0.2.0 for WP 6.8+ |
+| PHP | 7.4+ | 8.4 | - |
+| Database | MySQL 5.7+<br>MariaDB 10.3+ | MariaDB 12.0.2 | - |
 
-*Backward compatible.
+**Password Hash Support**: phpass (legacy), BCrypt (standard), BCrypt with `$wp$` prefix (WordPress 6.8+)
 
 ---
 
