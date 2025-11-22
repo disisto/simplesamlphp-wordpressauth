@@ -2,23 +2,23 @@
 
 /**
 *    SimpleSAMLphp WordpressAuth
-*    Version 0.1.0
+*    Version 0.2.0
 *
 *    SimpleSAMLphp module to use Wordpress as a SAML 2.0 Identity Provider.
 *
 *    WordpressAuth is a SimpleSAMLphp authentication module, that allows to use
 *    the Wordpress user database as the authentication source. The code was written
 *    for MySQL/MariaDB.
-*    
-*    
+*
+*
 *    Documentation: https://github.com/disisto/simplesamlphp-wordpressauth
-*    
+*
 *    Forked from https://github.com/OliverMaerz/WordpressAuth
 *    forked from https://github.com/Financial-Edge/simplesamlphp-module-wordpressauth/
 *
 *    Licensed under GNU GPL v2.0 (https://github.com/disisto/simplesamlphp-wordpressauth/blob/master/LICENSE)
 *
-*    Copyright (c) 2023 Roberto Di Sisto
+*    Copyright (c) 2023-2025 Roberto Di Sisto
 *
 *    Permission is hereby granted, free of charge, to any person obtaining a copy
 *    of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
 *
 *    The above copyright notice and this permission notice shall be included in all
 *    copies or substantial portions of the Software.
-*     
+*
 *    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 *    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 *    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,6 +37,7 @@
 *    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 *    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *    SOFTWARE.
+*
 **/
 
 namespace SimpleSAML\Module\wordpressauth\Auth\Source;
@@ -74,6 +75,56 @@ class WordpressAuth extends UserPassBase {
             throw new Exception('Missing or invalid password option in config.');
         }
         $this->password = $config['password'];
+    }
+
+    /**
+     * Verify password against WordPress hash
+     * Supports:
+     *   - WordPress 6.8+ BCrypt with $wp$ prefix (uses HMAC-SHA384 + Base64 before verification)
+     *   - Standard BCrypt hashes: $2y$, $2a$, $2b$
+     *   - Legacy phpass hashes: $P$, $H$
+     *
+     * @param string $password The plaintext password
+     * @param string $stored_hash The hash from database
+     * @return bool True if password matches
+     */
+    private function verifyPassword(string $password, string $stored_hash): bool {
+        // WordPress 6.8+ prefixed BCrypt hash
+        if (substr($stored_hash, 0, 4) === '$wp$') {
+            Logger::debug('WordpressAuth: Detected $wp$ prefix, using WordPress 6.8+ HMAC-SHA384 method');
+
+            // WordPress 6.8 uses HMAC-SHA384 + Base64 encoding before BCrypt verification
+            $password_to_verify = base64_encode(hash_hmac('sha384', $password, 'wp-sha384', true));
+
+            // Strip only $wp but keep the $ prefix (substr 3, not 4)
+            $hash = substr($stored_hash, 3);
+
+            Logger::debug('WordpressAuth: Verifying HMAC-SHA384(password) against BCrypt hash');
+            return password_verify($password_to_verify, $hash);
+        }
+
+        // Standard BCrypt hashes ($2y$, $2a$, $2b$) without $wp$ prefix
+        $bcrypt_prefixes = ['$2y$', '$2a$', '$2b$'];
+        foreach ($bcrypt_prefixes as $prefix) {
+            if (substr($stored_hash, 0, 4) === $prefix) {
+                Logger::debug('WordpressAuth: Using password_verify() for standard BCrypt hash');
+                return password_verify($password, $stored_hash);
+            }
+        }
+
+        // Legacy phpass hashes ($P$, $H$)
+        $phpass_prefixes = ['$P$', '$H$'];
+        foreach ($phpass_prefixes as $prefix) {
+            if (substr($stored_hash, 0, 3) === $prefix) {
+                Logger::debug('WordpressAuth: Using PasswordHash for legacy phpass hash');
+                $hasher = new PasswordHash(8, TRUE);
+                return $hasher->CheckPassword($password, $stored_hash);
+            }
+        }
+
+        // Unknown hash format
+        Logger::warning('WordpressAuth: Unknown password hash format: ' . substr($stored_hash, 0, 10) . '...');
+        return false;
     }
 
     protected function login(string $username, string $password): array {
@@ -135,22 +186,26 @@ class WordpressAuth extends UserPassBase {
             throw new Error('WRONGUSERPASS');
          }
 
-         $hasher = new PasswordHash(8, TRUE);
-
-         // Check the password against the hash in Wordpress wp_users table
-         if (!$hasher->CheckPassword($password, $row['user_pass'])){
+         // Verify password using the enhanced method
+         if (!$this->verifyPassword($password, $row['user_pass'])) {
             // Invalid password
+            Logger::info('WordpressAuth: Invalid password for user: ' . $username);
             throw new Error('WRONGUSERPASS');
          }
 
-         // Define the meta keys in an array
-           $meta_keys = [
+         Logger::info('WordpressAuth: Successful login for user: ' . $username);
+
+        // Define the meta keys in an array
+        // Show keys even if values are empty/null
+         $meta_keys = [
              'first_name',
              'last_name',
-             'profile_photo',
-             $table_prefix.'capabilities'
+             'profile_photo',    // Plugin: Ultimate Member     (https://wordpress.org/plugins/ultimate-member/)
+             'scopes'            // Plugin: Extra User Details  (https://wordpress.org/plugins/extra-user-details/)
+             //$table_prefix.'capabilities'
              // ... add more keys as needed
           ];
+
 
           // Fetch meta_keys from wp_usermeta table defined above
           $meta_keys_placeholders = implode("', '", $meta_keys);
@@ -171,14 +226,15 @@ class WordpressAuth extends UserPassBase {
           ];
 
          foreach ($meta_rows as $meta_row) {
-           $meta_key = $meta_row['meta_key'];
-           $meta_value = $meta_row['meta_value'];
+           $meta_key	    = $meta_row['meta_key'];
+           $meta_value	    = $meta_row['meta_value'];
 
-          if (in_array($meta_key, $meta_keys)) {
-            $attribute_name = str_replace($table_prefix, '', $meta_key);
-            $attributes[$attribute_name] = [$meta_value];
-          }
+           if (in_array($meta_key, $meta_keys)) {
+             $attribute_name = str_replace($table_prefix, '', $meta_key);
+             $attributes[$attribute_name] = [$meta_value];
+           }
         }
+
 
        // Return the attributes
        return $attributes;
